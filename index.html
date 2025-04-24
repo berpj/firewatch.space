@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Firewatch is a global fire detection system using satellite imagery from Sentinel-2 satellites.">
+    <meta name="keywords" content="firewatch, fire detection, satellite imagery, sentinel-2, global fire detection">
+    <meta name="author" content="firewatch.space">
+    <meta name="robots" content="index, follow">
+    
+    <title>FireWatch - Global Fire Detection</title>
+
+    <!-- Favicons -->
+    <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="shortcut icon" href="/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <meta name="apple-mobile-web-app-title" content="Firewatch" />
+    <link rel="manifest" href="/site.webmanifest" />
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Firewatch is a global fire detection system using satellite imagery from Sentinel-2 satellites.">
+    <meta name="keywords" content="firewatch, fire detection, satellite imagery, sentinel-2, global fire detection">
+    <meta name="author" content="firewatch.space">
+    <meta name="robots" content="index, follow">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://firewatch.space/">
+    <meta property="og:title" content="Firewatch - Global Fire Detection">
+    <meta property="og:description" content="Firewatch is a global fire detection system using satellite imagery from Sentinel-2 satellites.">
+    <meta property="og:image" content="https://firewatch.space/assets/screenshot.png">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://firewatch.space">
+    <meta property="twitter:site" content="@firewatchspace">
+    <meta property="twitter:creator" content="@firewatchspace">
+    <meta property="twitter:title" content="Firewatch - Global Fire Detection">
+    <meta property="twitter:description" content="Firewatch is a global fire detection system using satellite imagery from Sentinel-2 satellites.">
+    <meta property="twitter:image" content="https://firewatch.space/assets/screenshot.png">
+
+    <style>
+        :root {
+            --bg-color: #1a1a1a;
+            --text-color: #e0e0e0;
+            --card-bg: #2a2a2a;
+            --accent-color: #ff6b6b; /* A fiery accent */
+            --border-color: #444;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+            margin: 0;
+            padding-left: 20px;
+            padding-right: 20px;
+            padding-top: 5px;
+            padding-bottom: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            color: var(--text-color);
+        }
+
+        h1 .emoji {
+             font-size: 2.5rem; /* Slightly smaller emoji */
+        }
+
+        .subtitle {
+            font-size: 1.3rem;
+            color: var(--text-color);
+            opacity: 0.9;
+            max-width: 700px;
+            margin: 0 auto;
+            margin-bottom: 1em;
+        }
+
+        .card-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 30px;
+            max-width: 1000px; /* Max width for the card container */
+            width: 100%;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+            width: calc(50% - 15px); /* Two cards side-by-side with gap */
+            min-width: 300px; /* Minimum width for smaller screens */
+            max-width: 450px; /* Max width per card */
+            text-decoration: none;
+            color: var(--text-color);
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .card img {
+            width: 100%;
+            height: 236px; /* Adjusted height for 1200x630 (40:21) aspect ratio at max-width 450px */
+            object-fit: cover; /* Cover the area, cropping if needed */
+            display: block;
+            background-color: #333; /* Placeholder background */
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .card-content {
+            padding: 20px;
+            flex-grow: 1; /* Ensure content area takes remaining space */
+        }
+
+        .card h2 {
+            font-size: 1.4rem;
+            margin-top: 0;
+            margin-bottom: 10px;
+            color: var(--accent-color);
+        }
+
+        .card p {
+            font-size: 1rem;
+            line-height: 1.6;
+            opacity: 0.9;
+            margin-bottom: 0;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5rem;
+            }
+             h1 .emoji {
+                 font-size: 2rem;
+             }
+            .subtitle {
+                font-size: 1rem;
+            }
+            .card-container {
+                flex-direction: column;
+                align-items: center;
+            }
+            .card {
+                width: 90%; /* Stack cards on smaller screens */
+                max-width: 450px; /* Keep max width */
+            }
+        }
+
+        /* Footer styling */
+        footer {
+            width: 100%;
+            text-align: center;
+            margin-top: 60px; /* Increased margin for more space */
+            font-size: 0.9rem;
+            color: var(--text-color);
+            opacity: 0.7;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1><span class="emoji">🛰️</span> Firewatch</h1>
+        <p class="subtitle">
+            Global fire detection using satellite imagery from Sentinel-2 satellites.
+        </p>
+        <p class="explainer">
+            Every day, this software processes thousands of data files from Sentinel-2 satellites, analyzing spectral bands and clustering pixels to identify potential wildfires. 
+            <br><br>
+            <strong>Important Considerations:</strong> Sentinel-2 provides global coverage every 5 days, so all events might not be detected. Our detection focuses on fires ≥ 1km in size. Additionally, highly reflective surfaces like solar panels can sometimes trigger false positives.
+        </p>
+    </header>
+
+    <main class="card-container">
+        <a href="https://x.com/FirewatchBot" class="card" target="_blank">
+            <img src="/assets/x_screenshot.png" alt="X Bot Screenshot"> <!-- Replace with your X bot screenshot URL -->
+            <div class="card-content">
+                <h2>X Bot Updates</h2>
+                <p>Follow our X bot for near real-time fire detection alerts and updates directly in your feed.</p> <!-- Add your description -->
+            </div>
+        </a>
+
+        <a href="https://firewatch.space/d/I8LlkJX7k/firewatch-bot?orgId=1&kiosk" class="card" target="_blank" rel="noopener noreferrer">
+            <img src="/assets/grafana_screenshot.png" alt="Grafana Dashboard Map Screenshot"> <!-- Replace with your Grafana map screenshot URL -->
+            <div class="card-content">
+                <h2>Live Fire Map</h2>
+                <p>Explore the interactive Grafana dashboard map showing detected fire locations globally.</p> <!-- Add your description -->
+            </div>
+        </a>
+    </main>
+
+    <footer>
+        2022 - <span id="current-year"></span>
+    </footer>
+
+    <script>
+        document.getElementById('current-year').textContent = new Date().getFullYear();
+    </script>
+
+</body>
+</html>
