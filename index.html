@@ -34,7 +34,7 @@
     <meta property="og:url" content="https://firewatch.space/">
     <meta property="og:title" content="Firewatch - Global Fire Detection">
     <meta property="og:description" content="Firewatch is a global fire detection system using satellite imagery from Sentinel-2 satellites.">
-    <meta property="og:image" content="https://firewatch.space/assets/screenshot.png">
+    <meta property="og:image" content="https://firewatch.space/screenshot.png">
 
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image">
@@ -43,7 +43,7 @@
     <meta property="twitter:creator" content="@firewatchspace">
     <meta property="twitter:title" content="Firewatch - Global Fire Detection">
     <meta property="twitter:description" content="Firewatch is a global fire detection system using satellite imagery from Sentinel-2 satellites.">
-    <meta property="twitter:image" content="https://firewatch.space/assets/screenshot.png">
+    <meta property="twitter:image" content="https://firewatch.space/screenshot.png">
 
     <style>
         *, *::before, *::after {
@@ -186,7 +186,7 @@
             }
             h1 {
                 font-size: 2.6rem;
-            }
+             }
             .subtitle {
                 font-size: 1.1rem;
             }
@@ -311,19 +311,19 @@
 </head>
 <body>
     <div class="content-wrapper">
-        <header>
+    <header>
             <h1>🛰️ Firewatch</h1>
-            <p class="subtitle">
-                Global fire detection using satellite imagery from Sentinel-2 satellites.
-            </p>
-            <p class="explainer">
+        <p class="subtitle">
+            Global fire detection using satellite imagery from Sentinel-2 satellites.
+        </p>
+        <p class="explainer">
                 Every day, this software processes thousands of data files from Sentinel-2 satellites, analyzing spectral bands for hot spots and clustering them to identify potential wildfires.
-                <br><br>
-                <strong>Important Considerations:</strong> Sentinel-2 provides global coverage every 5 days, so all events might not be detected. Our detection focuses on fires ≥ 1km in size. Additionally, highly reflective surfaces like solar panels can sometimes trigger false positives.
-            </p>
-        </header>
+            <br><br>
+            <strong>Important Considerations:</strong> Sentinel-2 provides global coverage every 5 days, so all events might not be detected. Our detection focuses on fires ≥ 1km in size. Additionally, highly reflective surfaces like solar panels can sometimes trigger false positives.
+        </p>
+    </header>
 
-        <main class="card-container">
+    <main class="card-container">
             <a href="https://dashboard.firewatch.space/d/I8LlkJX7k/firewatch-bot?orgId=1&kiosk" class="card" target="_blank" rel="noopener noreferrer">
                 <img src="/assets/grafana_screenshot.png" alt="Grafana Dashboard Map Screenshot"> <!-- Replace with your Grafana map screenshot URL -->
                 <div class="card-content">
@@ -332,13 +332,13 @@
                 </div>
             </a>
 
-            <a href="https://x.com/FirewatchBot" class="card" target="_blank">
-                <img src="/assets/x_screenshot.png" alt="X Bot Screenshot"> <!-- Replace with your X bot screenshot URL -->
-                <div class="card-content">
-                    <h2>X Bot Updates</h2>
-                    <p>Follow our X bot for near real-time fire detection alerts and updates directly in your feed.</p> <!-- Add your description -->
-                </div>
-            </a>
+        <a href="https://x.com/FirewatchBot" class="card" target="_blank">
+            <img src="/assets/x_screenshot.png" alt="X Bot Screenshot"> <!-- Replace with your X bot screenshot URL -->
+            <div class="card-content">
+                <h2>X Bot Updates</h2>
+                <p>Follow our X bot for near real-time fire detection alerts and updates directly in your feed.</p> <!-- Add your description -->
+            </div>
+        </a>
         </main>
 
         <section class="notable-detections">
@@ -349,43 +349,57 @@
                      <p class="context">
                          <strong>Wildfire: Los Angeles County, California (Jan 2025)</strong><br> This detection corresponds to one of the wildfires within a series that affected the Los Angeles metropolitan area and San Diego County in January 2025. Such events underscore the wildfire risk in Southern California.
                      </p>
-                     <blockquote class="twitter-tweet" data-theme="dark"><p lang="und" dir="ltr">Detected on 2025-01-26 08:36:16 UTC <a href="https://t.co/6H0M1G3g5g">pic.twitter.com/6H0M1G3g5g</a></p>&mdash; Firewatch (@FirewatchBot) <a href="https://twitter.com/FirewatchBot/status/1882194941344154064?ref_src=twsrc%5Etfw">January 26, 2025</a></blockquote> 
+                     <blockquote class="twitter-tweet" data-theme="dark"><p lang="und" dir="ltr">Detected on 2025-01-26 08:36:16 UTC </p>&mdash; Firewatch (@FirewatchBot) <a href="https://twitter.com/FirewatchBot/status/1882194941344154064">January 26, 2025</a></blockquote> 
                  </div>
-
-                <div class="detection-item">
-                    <p class="context">
-                        <strong>Large Wildfire: Eastern Russia (Oct 2022)</strong><br> This large wildfire occurred during the full-scale invasion of Ukraine by Russia. The conflict likely strained local firefighting capabilities, contributing to the fire's spread in a sparsely populated region.
-                    </p>
-                    <blockquote class="twitter-tweet" data-theme="dark"><p lang="en" dir="ltr">Large wildfire detected South-West of Millerovo, Russia - near the Ukrainian border<br>Sentinel-2 🛰️ | 14/10/2022 <a href="https://t.co/zX5sC2576o">pic.twitter.com/zX5sC2576o</a></p>&mdash; Firewatch (@FirewatchBot) <a href="https://twitter.com/FirewatchBot/status/1580827598921560069?ref_src=twsrc%5Etfw">October 14, 2022</a></blockquote>
-                </div>
 
                 <div class="detection-item">
                     <p class="context">
                         <strong>Deforestation Fire: Amazon Rainforest (Nov 2024)</strong><br> Detected in the Amazon region, this fire is characteristic of patterns associated with deforestation activities, where land is often cleared for agricultural purposes like cattle ranching or crop cultivation.
                     </p>
-                     <blockquote class="twitter-tweet" data-theme="dark"><p lang="und" dir="ltr">Detected on 2024-11-11 14:41:06 UTC <a href="https://t.co/r5VvS2J30G">pic.twitter.com/r5VvS2J30G</a></p>&mdash; Firewatch (@FirewatchBot) <a href="https://twitter.com/FirewatchBot/status/1854947432196624539?ref_src=twsrc%5Etfw">November 11, 2024</a></blockquote>
+                     <blockquote class="twitter-tweet" data-theme="dark"><p lang="und" dir="ltr">Detected on 2024-11-11 14:41:06 UTC </p>&mdash; Firewatch (@FirewatchBot) <a href="https://twitter.com/FirewatchBot/status/1854947432196624539">November 11, 2024</a></blockquote>
+                </div>
+                
+                <div class="detection-item">
+                    <p class="context">
+                        <strong>Agricultural Burning: South Africa (Oct 2024)</strong><br> This detection shows multiple fire points typical of agricultural burning, a widespread practice used to clear crop residue, seen here in South Africa. While often controlled, these burns can impact air quality and sometimes escape containment.
+                    </p>
+                    <blockquote class="twitter-tweet" data-theme="dark"><p lang="und" dir="ltr">Detected on 2024-10-06 08:41:04 UTC </p>&mdash; Firewatch (@FirewatchBot) <a href="https://twitter.com/FirewatchBot/status/1842908623284081002">October 6, 2024</a></blockquote>
+                </div>
+
+                <div class="detection-item"> <!-- Greece Wildfire -->
+                    <p class="context">
+                        <strong>Wildfire: Greece (Aug 2023)</strong><br> This fire near Alexandroupolis became the largest wildfire recorded in the EU up to that time, burning over 730 square kilometers, particularly impacting the Dadia Forest.
+                    </p>
+                    <blockquote class="twitter-tweet" data-theme="dark"><p lang="und" dir="ltr">Detected on 2023-08-20 09:09:30 UTC </p>&mdash; Firewatch (@FirewatchBot) <a href="https://twitter.com/FirewatchBot/status/1693350379852025895">August 20, 2023</a></blockquote>
+                </div>
+
+                 <div class="detection-item"> <!-- Maui Wildfire -->
+                     <p class="context">
+                         <strong>Wildfire: Maui, Hawaii (Aug 2023)</strong><br> Part of a devastating series of wind-driven fires on Maui, particularly impacting Lahaina. Fueled by dry conditions and strong winds, these fires caused significant loss of life and widespread destruction.
+                     </p>
+                      <blockquote class="twitter-tweet" data-theme="dark"><p lang="und" dir="ltr">Detected on 2023-08-08 21:09:03 UTC </p>&mdash; Firewatch (@FirewatchBot) <a href="https://twitter.com/FirewatchBot/status/1689154997962096640">August 9, 2023</a></blockquote>
+                 </div>
+
+                 <div class="detection-item">
+                    <p class="context">
+                        <strong>Wildfire: Northern Territory, Australia (Oct 2022)</strong><br> This wildfire was detected burning along the coast in Australia's Northern Territory. The proximity to the shoreline and potential habitations highlights the diverse environments where these events occur.
+                    </p>
+                     <blockquote class="twitter-tweet" data-theme="dark"><p lang="und" dir="ltr">Detected on 2022-10-15 01:20:04 UTC </p>&mdash; Firewatch (@FirewatchBot) <a href="https://twitter.com/FirewatchBot/status/1581207927477927936">October 15, 2022</a></blockquote>
+                </div>
+
+                <div class="detection-item">
+                    <p class="context">
+                        <strong>Wildfire: Eastern Russia (Oct 2022)</strong><br> This large wildfire occurred during the full-scale invasion of Ukraine by Russia. The conflict likely strained local firefighting capabilities, contributing to the fire's spread in a sparsely populated region.
+                    </p>
+                    <blockquote class="twitter-tweet" data-theme="dark"><p lang="en" dir="ltr">Large wildfire detected South-West of Millerovo, Russia - near the Ukrainian border<br>Sentinel-2 🛰️ | 14/10/2022 </p>&mdash; Firewatch (@FirewatchBot) <a href="https://twitter.com/FirewatchBot/status/1580827598921560069">October 14, 2022</a></blockquote>
                 </div>
 
                 <div class="detection-item">
                     <p class="context">
                         <strong>Volcanic Activity: Mount Vesuvius, Italy (Jun 2022)</strong><br> While not a wildfire, the system detected significant thermal anomalies consistent with lava flows from Mount Vesuvius. This highlights the system's sensitivity to various high-temperature events.
                     </p>
-                     <blockquote class="twitter-tweet" data-theme="dark"><p lang="und" dir="ltr">Detected on 2022-06-06 09:56:01 UTC <a href="https://t.co/uGk1D8F5P4">pic.twitter.com/uGk1D8F5P4</a></p>&mdash; Firewatch (@FirewatchBot) <a href="https://twitter.com/FirewatchBot/status/1533858132069212160?ref_src=twsrc%5Etfw">June 6, 2022</a></blockquote> 
-                </div>
-
-                <div class="detection-item">
-                    <p class="context">
-                        <strong>Agricultural Burning: South Africa (Oct 2024)</strong><br> This detection shows multiple fire points typical of agricultural burning, a widespread practice used to clear crop residue, seen here in South Africa. While often controlled, these burns can impact air quality and sometimes escape containment.
-                    </p>
-                    <blockquote class="twitter-tweet" data-theme="dark"><p lang="und" dir="ltr">Detected on 2024-10-06 08:41:04 UTC <a href="https://t.co/q7J7uL4f8r">pic.twitter.com/q7J7uL4f8r</a></p>&mdash; Firewatch (@FirewatchBot) <a href="https://twitter.com/FirewatchBot/status/1842908623284081002?ref_src=twsrc%5Etfw">October 6, 2024</a></blockquote>
-                </div>
-
-                <div class="detection-item">
-                    <p class="context">
-                        <strong>Wildfire: Northern Territory, Australia (Oct 2022)</strong><br> This wildfire was detected burning along the coast in Australia's Northern Territory. The proximity to the shoreline and potential habitations highlights the diverse environments where these events occur.
-                    </p>
-                     <blockquote class="twitter-tweet" data-theme="dark"><p lang="und" dir="ltr">Detected on 2022-10-15 01:20:04 UTC <a href="https://t.co/L95p4L3tF3">pic.twitter.com/L95p4L3tF3</a></p>&mdash; Firewatch (@FirewatchBot) <a href="https://twitter.com/FirewatchBot/status/1581207927477927936?ref_src=twsrc%5Etfw">October 15, 2022</a></blockquote>
-                </div>
+                     <blockquote class="twitter-tweet" data-theme="dark"><p lang="und" dir="ltr">Detected on 2022-06-06 09:56:01 UTC </p>&mdash; Firewatch (@FirewatchBot) <a href="https://twitter.com/FirewatchBot/status/1533858132069212160">June 6, 2022</a></blockquote> 
+                 </div>
             </div>
         </section>
     </div>
@@ -396,7 +410,7 @@
             Sentinel-2 data sourced from <a href="https://registry.opendata.aws/sentinel-2-l2a-cogs/" target="_blank" rel="noopener noreferrer">Sentinel-2 L2A COGs</a>.
         </p>
         <p>
-            2022 - <span id="current-year"></span>
+        2022 - <span id="current-year"></span>
         </p>
     </footer>
 
