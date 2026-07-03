@@ -11,24 +11,18 @@
     <title>Firewatch - Global Fire Detection</title>
 
     <!-- Favicons -->
-    <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="shortcut icon" href="/favicon.ico" />
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-    <meta name="apple-mobile-web-app-title" content="Firewatch" />
-    <link rel="manifest" href="/site.webmanifest" />
+    <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96">
+    <link rel="icon" type="image/png" href="/favicon-32x32.png" sizes="32x32">
+    <link rel="icon" type="image/png" href="/favicon-16x16.png" sizes="16x16">
+    <link rel="shortcut icon" href="/favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <meta name="apple-mobile-web-app-title" content="Firewatch">
+    <link rel="manifest" href="/site.webmanifest">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&amp;display=swap" rel="stylesheet">
 
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Firewatch is a global fire detection system using satellite imagery from Sentinel-2 satellites.">
-    <meta name="keywords" content="firewatch, fire detection, satellite imagery, sentinel-2, global fire detection">
-    <meta name="author" content="firewatch.space">
-    <meta name="robots" content="index, follow">
-    
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://firewatch.space/">
@@ -37,13 +31,13 @@
     <meta property="og:image" content="https://firewatch.space/screenshot.png">
 
     <!-- Twitter -->
-    <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:url" content="https://firewatch.space">
-    <meta property="twitter:site" content="@firewatchspace">
-    <meta property="twitter:creator" content="@firewatchspace">
-    <meta property="twitter:title" content="Firewatch - Global Fire Detection">
-    <meta property="twitter:description" content="Firewatch is a global fire detection system using satellite imagery from Sentinel-2 satellites.">
-    <meta property="twitter:image" content="https://firewatch.space/screenshot.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://firewatch.space">
+    <meta name="twitter:site" content="@firewatchspace">
+    <meta name="twitter:creator" content="@firewatchspace">
+    <meta name="twitter:title" content="Firewatch - Global Fire Detection">
+    <meta name="twitter:description" content="Firewatch is a global fire detection system using satellite imagery from Sentinel-2 satellites.">
+    <meta name="twitter:image" content="https://firewatch.space/screenshot.png">
 
     <style>
         *, *::before, *::after {
@@ -334,19 +328,19 @@
     </header>
 
     <main class="card-container">
-            <a href="https://dashboard.firewatch.space/d/I8LlkJX7k/firewatch-bot?orgId=1&kiosk" class="card" target="_blank" rel="noopener noreferrer">
-                <img src="/assets/grafana_screenshot.png" alt="Grafana Dashboard Map Screenshot"> <!-- Replace with your Grafana map screenshot URL -->
+            <a href="https://dashboard.firewatch.space/d/I8LlkJX7k/firewatch-bot?orgId=1&amp;kiosk" class="card" target="_blank" rel="noopener noreferrer">
+                <img src="/assets/grafana_screenshot.png" alt="Grafana Dashboard Map Screenshot">
                 <div class="card-content">
                     <h2>Live Fire Map</h2>
-                    <p>Explore the interactive Grafana dashboard map showing detected fire locations globally.</p> <!-- Add your description -->
+                    <p>Explore the interactive Grafana dashboard map showing detected fire locations globally.</p>
                 </div>
             </a>
 
-        <a href="https://x.com/FirewatchBot" class="card" target="_blank">
-            <img src="/assets/x_screenshot.png" alt="X Bot Screenshot"> <!-- Replace with your X bot screenshot URL -->
+        <a href="https://x.com/FirewatchBot" class="card" target="_blank" rel="noopener noreferrer">
+            <img src="/assets/x_screenshot.png" alt="X Bot Screenshot">
             <div class="card-content">
                 <h2>X Bot Updates</h2>
-                <p>Follow our X bot for near real-time fire detection alerts and updates directly in your feed.</p> <!-- Add your description -->
+                <p>Follow our X bot for near real-time fire detection alerts and updates directly in your feed.</p>
             </div>
         </a>
         </main>
@@ -355,6 +349,13 @@
             <h2>Notable Detections</h2>
             <p class="section-subtitle">A selection of interesting fire events detected by the system.</p>
             <div class="detections-grid">
+                <div class="detection-item"> <!-- Japan Vegetation Fire -->
+                    <p class="context">
+                        <strong>Vegetation Fire: Aso District, Kumamoto, Japan (Mar 2026)</strong><br> Detected within the caldera of the active Mount Aso volcano, this image shows smoke and multiple active fires close to towns, farms, and roads.
+                    </p>
+                     <blockquote class="twitter-tweet" data-theme="dark"><p lang="und" dir="ltr">Detected on 2026-03-01 02:08:00 UTC </p>&mdash; Firewatch (@FirewatchBot) <a href="https://twitter.com/FirewatchBot/status/2028005881519215026">March 1, 2026</a></blockquote>
+                 </div>
+
                  <div class="detection-item"> <!-- LA Wildfire -->
                      <p class="context">
                          <strong>Wildfire: Los Angeles County, California (Jan 2025)</strong><br> This detection corresponds to one of the wildfires within a series that affected the Los Angeles metropolitan area and San Diego County in January 2025. Such events underscore the wildfire risk in Southern California.
@@ -422,14 +423,14 @@
                     <p class="context">
                         <strong>Volcanic Activity: Mount Vesuvius, Italy (Jun 2022)</strong><br> While not a wildfire, the system detected significant thermal anomalies consistent with lava flows from Mount Vesuvius. This highlights the system's sensitivity to various high-temperature events.
                     </p>
-                     <blockquote class="twitter-tweet" data-theme="dark"><p lang="und" dir="ltr">Detected on 2022-06-06 09:56:01 UTC </p>&mdash; Firewatch (@FirewatchBot) <a href="https://twitter.com/FirewatchBot/status/1533858132069212160">June 6, 2022</a></blockquote> 
+                     <blockquote class="twitter-tweet" data-theme="dark"><p lang="und" dir="ltr">Detected on 2022-06-06 09:56:01 UTC </p>&mdash; Firewatch (@FirewatchBot) <a href="https://twitter.com/FirewatchBot/status/1533858132069212160">June 6, 2022</a></blockquote>
                  </div>
             </div>
         </section>
     </div>
     <footer>
         <p class="data-source-ack">
-            Developed and maintained by <a href="https://x.com/berpj" target="_blank">berpj</a>.<br>
+            Developed and maintained by <a href="https://x.com/berpj" target="_blank" rel="noopener noreferrer">berpj</a>.<br>
 
             Sentinel-2 data sourced from <a href="https://registry.opendata.aws/sentinel-2-l2a-cogs/" target="_blank" rel="noopener noreferrer">Sentinel-2 L2A COGs</a>.
         </p>
