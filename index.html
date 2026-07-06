@@ -46,7 +46,7 @@
             --card-bg: #374151;
             --text-color: #f3f4f6;
             --secondary-text-color: #c7ccd3;
-            --accent-color: #e54b4b;
+            --accent-color: #ff8a80;
             --border-color: #4b5563;
             --shadow-color: rgba(0, 0, 0, 0.25);
         }
@@ -272,6 +272,10 @@
             margin: 0 auto !important;
         }
 
+        .detection-item .twitter-tweet a {
+            color: var(--accent-color);
+        }
+
         @media (max-width: 768px) {
             .notable-detections h2 {
                 font-size: 1.8rem;
@@ -294,7 +298,8 @@
 
         .data-source-ack a {
             color: var(--accent-color);
-            text-decoration: none;
+            text-decoration: underline;
+            text-underline-offset: 0.15em;
         }
 
         .data-source-ack a:hover {
@@ -440,7 +445,11 @@
 
         window.dataLayer = window.dataLayer || [];
         window.gtag = function(){dataLayer.push(arguments);}
-        window.addEventListener('load', function () {
+        var analyticsLoaded = false;
+        function loadAnalytics() {
+            if (analyticsLoaded) return;
+            analyticsLoaded = true;
+
             var script = document.createElement('script');
             script.async = true;
             script.src = 'https://www.googletagmanager.com/gtag/js?id=G-Y9RWMBP99B';
@@ -448,7 +457,13 @@
 
             window.gtag('js', new Date());
             window.gtag('config', 'G-Y9RWMBP99B');
+        }
+
+        window.addEventListener('load', function () {
+            setTimeout(loadAnalytics, 10000);
         });
+        window.addEventListener('pointerdown', loadAnalytics, { once: true });
+        window.addEventListener('keydown', loadAnalytics, { once: true });
 
         var tweet = document.querySelector('.twitter-tweet');
         var twitterLoaded = false;
