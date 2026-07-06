@@ -18,10 +18,7 @@
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
     <meta name="apple-mobile-web-app-title" content="Firewatch">
     <link rel="manifest" href="/site.webmanifest">
-
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&amp;display=swap" rel="stylesheet">
+    <link rel="preload" href="/assets/grafana_screenshot.webp" as="image" type="image/webp" fetchpriority="high">
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
@@ -57,7 +54,7 @@
         body {
             background-color: var(--bg-color);
             color: var(--text-color);
-            font-family: 'Lato', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
             margin: 0;
             padding: 0px 20px 20px;
             display: flex;
@@ -88,7 +85,7 @@
             font-size: 3.2rem;
             margin-bottom: 15px;
             color: var(--text-color);
-            font-weight: 700;
+            font-weight: 600;
             margin-top: 15px;
         }
 
@@ -255,6 +252,8 @@
             border: 1px solid var(--border-color);
             padding: 20px;
             box-shadow: 0 4px 6px var(--shadow-color);
+            content-visibility: auto;
+            contain-intrinsic-size: 260px;
         }
 
         .detection-item .context {
@@ -303,15 +302,6 @@
         }
     </style>
 
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-Y9RWMBP99B"></script>
-    <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-
-    gtag('config', 'G-Y9RWMBP99B');
-    </script>
 </head>
 <body>
     <div class="content-wrapper">
@@ -329,7 +319,10 @@
 
     <main class="card-container">
             <a href="https://dashboard.firewatch.space/d/I8LlkJX7k/firewatch-bot?orgId=1&amp;kiosk" class="card" target="_blank" rel="noopener noreferrer">
-                <img src="/assets/grafana_screenshot.png" alt="Grafana Dashboard Map Screenshot">
+                <picture>
+                    <source srcset="/assets/grafana_screenshot.webp" type="image/webp">
+                    <img src="/assets/grafana_screenshot.png" alt="Grafana Dashboard Map Screenshot" width="1200" height="630" decoding="async" fetchpriority="high">
+                </picture>
                 <div class="card-content">
                     <h2>Live Fire Map</h2>
                     <p>Explore the interactive Grafana dashboard map showing detected fire locations globally.</p>
@@ -337,7 +330,10 @@
             </a>
 
         <a href="https://x.com/FirewatchBot" class="card" target="_blank" rel="noopener noreferrer">
-            <img src="/assets/x_screenshot.png" alt="X Bot Screenshot">
+            <picture>
+                <source srcset="/assets/x_screenshot.webp" type="image/webp">
+                <img src="/assets/x_screenshot.png" alt="X Bot Screenshot" width="1200" height="630" loading="lazy" decoding="async">
+            </picture>
             <div class="card-content">
                 <h2>X Bot Updates</h2>
                 <p>Follow our X bot for near real-time fire detection alerts and updates directly in your feed.</p>
@@ -441,7 +437,43 @@
 
     <script>
         document.getElementById('current-year').textContent = new Date().getFullYear();
+
+        window.dataLayer = window.dataLayer || [];
+        window.gtag = function(){dataLayer.push(arguments);}
+        window.addEventListener('load', function () {
+            var script = document.createElement('script');
+            script.async = true;
+            script.src = 'https://www.googletagmanager.com/gtag/js?id=G-Y9RWMBP99B';
+            document.head.appendChild(script);
+
+            window.gtag('js', new Date());
+            window.gtag('config', 'G-Y9RWMBP99B');
+        });
+
+        var tweet = document.querySelector('.twitter-tweet');
+        var twitterLoaded = false;
+        function loadTwitterWidgets() {
+            if (twitterLoaded) return;
+            twitterLoaded = true;
+
+            var script = document.createElement('script');
+            script.async = true;
+            script.src = 'https://platform.twitter.com/widgets.js';
+            script.charset = 'utf-8';
+            document.body.appendChild(script);
+        }
+
+        if ('IntersectionObserver' in window && tweet) {
+            var observer = new IntersectionObserver(function (entries) {
+                if (entries[0].isIntersecting) {
+                    loadTwitterWidgets();
+                    observer.disconnect();
+                }
+            }, { rootMargin: '200px' });
+            observer.observe(tweet);
+        } else {
+            window.addEventListener('load', loadTwitterWidgets);
+        }
     </script>
-    <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
 </body>
 </html>
