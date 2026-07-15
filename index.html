@@ -30,8 +30,8 @@
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:url" content="https://firewatch.space">
-    <meta name="twitter:site" content="@firewatchspace">
-    <meta name="twitter:creator" content="@firewatchspace">
+    <meta name="twitter:site" content="@FirewatchBot">
+    <meta name="twitter:creator" content="@FirewatchBot">
     <meta name="twitter:title" content="Firewatch - Global Fire Detection">
     <meta name="twitter:description" content="Firewatch is a global fire detection system using satellite imagery from Sentinel-2 satellites.">
     <meta name="twitter:image" content="https://firewatch.space/screenshot.png">
@@ -268,6 +268,11 @@
             color: var(--text-color);
         }
 
+        .detection-item .context a {
+            color: var(--text-color);
+            text-underline-offset: 0.15em;
+        }
+
         .detection-item .twitter-tweet {
             margin: 0 auto !important;
         }
@@ -350,6 +355,13 @@
             <h2>Notable Detections</h2>
             <p class="section-subtitle">A selection of interesting fire events detected by the system.</p>
             <div class="detections-grid">
+                <div class="detection-item"> <!-- Fontainebleau Wildfire -->
+                    <p class="context">
+                        <strong>Wildfire: Fontainebleau Forest, France (Jul 2026)</strong><br> Firewatch recorded hot spots and a large smoke plume on July 13 at 10:57 UTC. The detection at 48.3719, 2.5764 matches the major wildfire that began July 12 near Achères-la-Forêt and Le Vaudoué, about 60 km southeast of Paris. <a href="https://www.gendarmerie.interieur.gouv.fr/gendinfo/actualites/2026/incendie-en-foret-de-fontainebleau-deplacement-du-ministre-de-l-interieur-et-mobilisation-de-la-gendarmerie" target="_blank" rel="noopener noreferrer">French government incident update.</a>
+                    </p>
+                    <blockquote class="twitter-tweet" data-theme="dark"><p lang="und" dir="ltr">Detected on 2026-07-13 10:57:42 UTC</p>&mdash; Firewatch (@FirewatchBot) <a href="https://twitter.com/FirewatchBot/status/2076991909428686911">July 13, 2026</a></blockquote>
+                </div>
+
                 <div class="detection-item"> <!-- Japan Vegetation Fire -->
                     <p class="context">
                         <strong>Vegetation Fire: Aso District, Kumamoto, Japan (Mar 2026)</strong><br> Detected within the caldera of the active Mount Aso volcano, this image shows smoke and multiple active fires close to towns, farms, and roads.
