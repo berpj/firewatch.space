@@ -18,7 +18,7 @@
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
     <meta name="apple-mobile-web-app-title" content="Firewatch">
     <link rel="manifest" href="/site.webmanifest">
-    <link rel="preload" href="/assets/grafana_screenshot.webp" as="image" type="image/webp" fetchpriority="high">
+    <link rel="preload" href="/assets/grafana_screenshot.webp?v=3" as="image" type="image/webp" fetchpriority="high">
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
@@ -334,20 +334,20 @@
     </header>
 
     <main class="card-container">
-            <a href="https://dashboard.firewatch.space/d/I8LlkJX7k/firewatch-bot?orgId=1&amp;kiosk" class="card" target="_blank" rel="noopener noreferrer">
+            <a href="/map/" class="card">
                 <picture>
-                    <source srcset="/assets/grafana_screenshot.webp" type="image/webp">
-                    <img src="/assets/grafana_screenshot.png" alt="Grafana Dashboard Map Screenshot" width="1200" height="630" decoding="async" fetchpriority="high">
+                    <source srcset="/assets/grafana_screenshot.webp?v=3" type="image/webp">
+                    <img src="/assets/grafana_screenshot.png?v=3" alt="Firewatch live map preview" width="1200" height="630" decoding="async" fetchpriority="high">
                 </picture>
                 <div class="card-content">
                     <h2>Live Fire Map</h2>
-                    <p>Explore the interactive Grafana dashboard map showing detected fire locations globally.</p>
+                    <p>Explore every detected fire on a full-screen satellite globe. Zoom in to place each Sentinel-2 image over the terrain.</p>
                 </div>
             </a>
 
         <a href="https://x.com/FirewatchBot" class="card" target="_blank" rel="noopener noreferrer">
             <picture>
-                <source srcset="/assets/x_screenshot.webp" type="image/webp">
+                <source srcset="/assets/x_screenshot.webp?v=2x" type="image/webp">
                 <img src="/assets/x_screenshot.png" alt="X Bot Screenshot" width="1200" height="630" loading="lazy" decoding="async">
             </picture>
             <div class="card-content">
