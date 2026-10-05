@@ -675,23 +675,27 @@
             details.removeAttribute("inert");
         }
 
-        // A flight lasts longer the more zoom levels it covers, so a tap from the globe is a smooth swoop (about 3.3 s)
-        // while a hop to a nearby fire stays quick (0.9 s)
-        function flightDuration(fire, zoom) {
+        // How many screens away a fire is at the current zoom
+        function screensTo(fire) {
             const center = map.getCenter();
             const metersPerPixel = 40075016.686 * Math.cos(center.lat * Math.PI / 180) / (512 * 2 ** map.getZoom());
-            const screens = center.distanceTo(new maplibregl.LngLat(fire.longitude, fire.latitude)) / (innerWidth * metersPerPixel);
-            // The levels flown: the change of zoom, plus zooming out and back in to cross a long distance
-            const levels = Math.abs(zoom - map.getZoom()) + 2 * Math.max(0, Math.log2(screens));
-            return Math.min(4500, Math.max(900, 600 + 300 * levels || 900));
+            return center.distanceTo(new maplibregl.LngLat(fire.longitude, fire.latitude)) / (innerWidth * metersPerPixel);
         }
 
-        // Gentle at both ends. MapLibre's default easing starts fast, which is abrupt when the flight is long
+        // A move lasts longer the more zoom levels it covers: about 1.8 s from the globe, and 0.9 s for a hop to a nearby fire
+        function moveDuration(zoom, screens) {
+            // The levels covered: the change of zoom, plus zooming out and back in to cross a long distance
+            const levels = Math.abs(zoom - map.getZoom()) + 2 * Math.max(0, Math.log2(screens));
+            return Math.min(3200, Math.max(900, 800 + 115 * levels || 900));
+        }
+
+        // Gentle at both ends. MapLibre's default easing starts fast, which is abrupt on a long zoom
         const easeInOutSine = (progress) => -(Math.cos(Math.PI * progress) - 1) / 2;
 
         function focusFire(fire, zoomIn = true) {
             const zoom = zoomIn ? Math.max(map.getZoom(), 10.6) : map.getZoom();
-            // Start downloading the images now, so they arrive during the flight instead of after it
+            const screens = screensTo(fire);
+            // Start downloading the images now, so they arrive during the move instead of after it
             prefetchImage(fire.thumb_url || fire.image_url);
             prefetchImage(imageSource(fire, frameWidthAt(fire, zoom)));
             if (zoomIn && map.getZoom() < PHOTO_ZOOM) pendingFire = fire;
@@ -699,14 +703,16 @@
                 pendingFire = null;
                 openDetails(fire);
             }
-            // flyTo zooms out and back in over long distances, instead of sweeping across the map at full zoom
-            map.flyTo({
+            const move = {
                 center: [fire.longitude, fire.latitude],
                 padding: detailsPadding(),
                 zoom,
-                duration: matchMedia("(prefers-reduced-motion: reduce)").matches ? 0 : flightDuration(fire, zoom),
+                duration: matchMedia("(prefers-reduced-motion: reduce)").matches ? 0 : moveDuration(zoom, screens),
                 easing: easeInOutSine
-            });
+            };
+            // Far away, flyTo zooms out and back in instead of sweeping across the map at full zoom. Otherwise slide and zoom together
+            if (screens > 2) map.flyTo(move);
+            else map.easeTo(move);
         }
 
         map.on("load", async () => {
