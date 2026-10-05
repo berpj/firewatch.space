@@ -240,6 +240,15 @@
             font-size: clamp(1.55rem, 4vw, 2.15rem);
             line-height: 1.05;
             letter-spacing: -0.035em;
+            overflow-wrap: anywhere;
+            text-wrap: balance;
+        }
+
+        .details-region {
+            margin: 0;
+            color: var(--muted);
+            font-size: 0.95rem;
+            line-height: 1.35;
         }
 
         .details dl {
@@ -428,6 +437,7 @@
         </div>
         <div class="details-body">
             <h1 id="details-title">Detected fire</h1>
+            <p class="details-region" id="details-region" hidden></p>
             <dl>
                 <dt>Detected</dt><dd id="details-date"></dd>
                 <dt>Location</dt><dd id="details-location"></dd>
@@ -660,7 +670,25 @@
             mapHint.hidden = nearby.length > 0;
         }
 
+        // Names each fire after its place and the day it was detected, like "Abim fire · 5 Oct". Fires with the same name on the same day
+        // are numbered in order of detection ("Northern Territory fire #2 · 14 Sep"), so every name is unique. Fires with no place stay unnamed
+        function nameFires() {
+            const counts = new Map();
+            [...fires].sort((a, b) => a.detected_at.localeCompare(b.detected_at) || a.id.localeCompare(b.id)).forEach((fire) => {
+                if (!fire.place) return;
+                const [place, ...region] = fire.place.split(", ").filter((part, index, parts) => part !== parts[index - 1]);
+                const day = new Date(fire.detected_at).toLocaleDateString(undefined, { day: "numeric", month: "short", timeZone: "UTC" });
+                const number = (counts.get(`${place}|${day}`) || 0) + 1;
+                counts.set(`${place}|${day}`, number);
+                fire.name = `${place} fire${number > 1 ? ` #${number}` : ""} · ${day}`;
+                fire.region = region.join(", ");
+            });
+        }
+
         function openDetails(fire) {
+            document.getElementById("details-title").textContent = fire.name || "Detected fire";
+            document.getElementById("details-region").textContent = fire.region || "";
+            document.getElementById("details-region").hidden = !fire.region;
             const date = new Date(fire.detected_at);
             document.getElementById("details-date").textContent = date.toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short", timeZone: "UTC" }) + " UTC";
             document.getElementById("details-location").textContent = `${fire.latitude.toFixed(4)}, ${fire.longitude.toFixed(4)}`;
@@ -721,6 +749,7 @@
             try {
                 const data = await fireData;
                 fires = data.fires;
+                nameFires();
 
                 map.addSource("fires", {
                     type: "geojson",
