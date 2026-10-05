@@ -165,12 +165,8 @@
         }
 
         .map-hint {
-            position: fixed;
-            z-index: 2;
-            left: max(18px, env(safe-area-inset-left));
-            bottom: calc(94px + env(safe-area-inset-bottom));
             max-width: min(320px, calc(100vw - 90px));
-            margin: 0;
+            margin: 0 0 10px 10px;
             padding: 9px 12px;
             border-radius: 4px;
             background: rgba(10, 12, 10, 0.86);
@@ -216,27 +212,20 @@
             transform: translateX(0);
         }
 
-        .details-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 20px;
-            margin-bottom: 18px;
-        }
-
-        .details-header span {
-            color: var(--muted);
-            font-size: 0.78rem;
-        }
-
         .close-button {
-            min-height: 34px;
-            padding: 0 12px;
-            font-size: 0.8rem;
+            position: absolute;
+            top: max(12px, env(safe-area-inset-top));
+            right: max(12px, env(safe-area-inset-right));
+            display: grid;
+            place-items: center;
+            width: 36px;
+            height: 36px;
+            padding: 0;
         }
 
         .details h1 {
             margin: 0 0 8px;
+            padding-right: 48px;
             font-size: clamp(1.55rem, 4vw, 2.15rem);
             line-height: 1.05;
             letter-spacing: -0.035em;
@@ -306,7 +295,10 @@
             line-height: 1.5;
         }
 
+        /* The hint is moved into this corner by the script, so it sits to the right of the zoom buttons */
         .maplibregl-ctrl-bottom-left {
+            display: flex;
+            align-items: flex-end;
             left: max(8px, env(safe-area-inset-left));
             bottom: max(8px, env(safe-area-inset-bottom));
         }
@@ -363,12 +355,6 @@
                 padding: 0 10px;
             }
 
-            .map-hint {
-                left: max(10px, env(safe-area-inset-left));
-                bottom: calc(116px + env(safe-area-inset-bottom));
-                max-width: calc(100vw - 70px);
-            }
-
             .details {
                 top: auto;
                 bottom: 0;
@@ -394,13 +380,14 @@
                 min-height: 42px;
             }
 
+            .close-button {
+                top: 10px;
+                right: max(10px, env(safe-area-inset-right));
+            }
+
             body.details-open .maplibregl-ctrl-bottom-left {
                 left: max(8px, env(safe-area-inset-left));
                 bottom: calc(var(--details-height) + max(8px, env(safe-area-inset-bottom)));
-            }
-
-            body.details-open .map-hint {
-                bottom: calc(var(--details-height) + 116px + env(safe-area-inset-bottom));
             }
         }
 
@@ -428,13 +415,12 @@
         </div>
     </header>
 
-    <p class="map-hint" id="map-hint"><strong>Every red point is a Firewatch detection.</strong> Zoom in to see the actual satellite image of the fire.</p>
+    <p class="map-hint" id="map-hint" hidden><strong>Every red point is a Firewatch detection.</strong> Brighter means more recent. Zoom in to see the actual satellite image of the fire.</p>
 
     <aside class="details" id="details" aria-hidden="true" aria-labelledby="details-title" inert>
-        <div class="details-header">
-            <span>Firewatch detection</span>
-            <button class="close-button" id="close-details" type="button">Close</button>
-        </div>
+        <button class="close-button" id="close-details" type="button" aria-label="Close">
+            <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>
+        </button>
         <div class="details-body">
             <h1 id="details-title">Detected fire</h1>
             <p class="details-region" id="details-region" hidden></p>
@@ -494,6 +480,7 @@
         const imageMarkers = new Map();
 
         map.addControl(new maplibregl.NavigationControl({ showCompass: false }), "bottom-left");
+        document.querySelector(".maplibregl-ctrl-bottom-left").append(mapHint);
         map.touchZoomRotate.disableRotation();
         map.keyboard.disableRotation();
 
@@ -703,11 +690,11 @@
             details.removeAttribute("inert");
         }
 
-        // How many screens away a fire is at the current zoom
-        function screensTo(fire) {
+        // How many screens away a place is at the current zoom
+        function screensTo(longitude, latitude) {
             const center = map.getCenter();
             const metersPerPixel = 40075016.686 * Math.cos(center.lat * Math.PI / 180) / (512 * 2 ** map.getZoom());
-            return center.distanceTo(new maplibregl.LngLat(fire.longitude, fire.latitude)) / (innerWidth * metersPerPixel);
+            return center.distanceTo(new maplibregl.LngLat(longitude, latitude)) / (innerWidth * metersPerPixel);
         }
 
         // A move lasts longer the more zoom levels it covers: about 1.8 s from the globe, and 0.9 s for a hop to a nearby fire
@@ -720,19 +707,10 @@
         // Gentle at both ends. MapLibre's default easing starts fast, which is abrupt on a long zoom
         const easeInOutSine = (progress) => -(Math.cos(Math.PI * progress) - 1) / 2;
 
-        function focusFire(fire, zoomIn = true) {
-            const zoom = zoomIn ? Math.max(map.getZoom(), 10.6) : map.getZoom();
-            const screens = screensTo(fire);
-            // Start downloading the images now, so they arrive during the move instead of after it
-            prefetchImage(fire.thumb_url || fire.image_url);
-            prefetchImage(imageSource(fire, frameWidthAt(fire, zoom)));
-            if (zoomIn && map.getZoom() < PHOTO_ZOOM) pendingFire = fire;
-            else {
-                pendingFire = null;
-                openDetails(fire);
-            }
+        function moveCamera([longitude, latitude], zoom) {
+            const screens = screensTo(longitude, latitude);
             const move = {
-                center: [fire.longitude, fire.latitude],
+                center: [longitude, latitude],
                 padding: detailsPadding(),
                 zoom,
                 duration: matchMedia("(prefers-reduced-motion: reduce)").matches ? 0 : moveDuration(zoom, screens),
@@ -741,6 +719,44 @@
             // Far away, flyTo zooms out and back in instead of sweeping across the map at full zoom. Otherwise slide and zoom together
             if (screens > 2) map.flyTo(move);
             else map.easeTo(move);
+        }
+
+        function focusFire(fire, zoomIn = true) {
+            const zoom = zoomIn ? Math.max(map.getZoom(), 10.6) : map.getZoom();
+            // Start downloading the images now, so they arrive during the move instead of after it
+            prefetchImage(fire.thumb_url || fire.image_url);
+            prefetchImage(imageSource(fire, frameWidthAt(fire, zoom)));
+            if (zoomIn && map.getZoom() < PHOTO_ZOOM) pendingFire = fire;
+            else {
+                pendingFire = null;
+                openDetails(fire);
+            }
+            moveCamera([fire.longitude, fire.latitude], zoom);
+        }
+
+        // A fingertip is much wider than a dot, so a tap opens the nearest fire within reach. If the spot holds several fires that
+        // overlap on screen, a tap zooms in on them first instead, so the next tap can choose one
+        function tapFires(point) {
+            const reach = matchMedia("(pointer: coarse)").matches ? 22 : 8;
+            const ids = new Set(map.queryRenderedFeatures([[point.x - reach, point.y - reach], [point.x + reach, point.y + reach]], { layers: ["fires"] }).map((feature) => feature.properties.id));
+            const near = fires.filter((fire) => ids.has(fire.id)).map((fire) => {
+                const position = map.project([fire.longitude, fire.latitude]);
+                return { fire, position, distance: position.dist(point) };
+            }).sort((a, b) => a.distance - b.distance);
+            if (!near.length) return;
+
+            const overlapping = near.filter((item) => item.position.dist(near[0].position) < 12);
+            if (overlapping.length > 1) {
+                const bounds = new maplibregl.LngLatBounds();
+                overlapping.forEach(({ fire }) => bounds.extend([fire.longitude, fire.latitude]));
+                const camera = map.cameraForBounds(bounds, { padding: 80, maxZoom: 11 });
+                if (camera && camera.zoom > map.getZoom() + 0.75) {
+                    pendingFire = null;
+                    moveCamera([camera.center.lng, camera.center.lat], camera.zoom);
+                    return;
+                }
+            }
+            focusFire(near[0].fire);
         }
 
         map.on("load", async () => {
@@ -758,22 +774,27 @@
                         features: fires.map((fire) => ({
                             type: "Feature",
                             geometry: { type: "Point", coordinates: [fire.longitude, fire.latitude] },
-                            properties: { id: fire.id }
+                            properties: { id: fire.id, age: (Date.now() - Date.parse(fire.detected_at)) / 864e5 }
                         }))
                     }
                 });
 
+                // The newest fires are the brightest and biggest, and are drawn on top. Older ones fade over the month.
+                // Zooming in still fades every dot, to show the imagery below
+                const fade = ["interpolate", ["linear"], ["get", "age"], 0, 1, 2, 1, 7, 0.75, 30, 0.45];
+                const size = ["interpolate", ["linear"], ["get", "age"], 0, 1.3, 2, 1.15, 7, 1];
                 map.addLayer({
                     id: "fires",
                     type: "circle",
                     source: "fires",
+                    layout: { "circle-sort-key": ["-", ["get", "age"]] },
                     paint: {
-                        "circle-color": "#e43e32",
-                        "circle-radius": ["interpolate", ["linear"], ["zoom"], 0, 3.5, 5, 5.25, 9, 8.25, 12, 10.5],
-                        "circle-opacity": ["interpolate", ["linear"], ["zoom"], 0, 0.88, 9, 0.82, 10.3, 0.32],
+                        "circle-color": ["interpolate", ["linear"], ["get", "age"], 0, "#ff5a36", 2, "#ee4535", 7, "#e43e32"],
+                        "circle-radius": ["interpolate", ["linear"], ["zoom"], 0, ["*", 3.5, size], 5, ["*", 5.25, size], 9, ["*", 8.25, size], 12, ["*", 10.5, size]],
+                        "circle-opacity": ["interpolate", ["linear"], ["zoom"], 0, ["*", 0.88, fade], 9, ["*", 0.82, fade], 10.3, ["*", 0.32, fade]],
                         "circle-stroke-color": "#fff3e6",
                         "circle-stroke-width": ["interpolate", ["linear"], ["zoom"], 0, 0, 8, 1.2],
-                        "circle-stroke-opacity": 0.7
+                        "circle-stroke-opacity": ["*", 0.7, fade]
                     }
                 });
 
@@ -785,10 +806,7 @@
 
                 map.on("mouseenter", "fires", () => { map.getCanvas().style.cursor = "pointer"; });
                 map.on("mouseleave", "fires", () => { map.getCanvas().style.cursor = ""; });
-                map.on("click", "fires", (event) => {
-                    const fire = fires.find((item) => item.id === event.features[0].properties.id);
-                    if (fire) focusFire(fire);
-                });
+                map.on("click", (event) => tapFires(event.point));
             } catch (error) {
                 document.getElementById("error-message").hidden = false;
                 document.getElementById("error-message").textContent = "The fire data could not be loaded. Please refresh the page in a moment.";
