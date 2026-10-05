@@ -192,6 +192,11 @@
             opacity: 0.9;
             clip-path: inset(12% 0 4% 0);
             transform-origin: center;
+            animation: fire-image-in 300ms ease-out;
+        }
+
+        @keyframes fire-image-in {
+            from { opacity: 0; }
         }
 
         .details {
@@ -395,6 +400,10 @@
             .details {
                 transition: none;
             }
+
+            .fire-image-overlay {
+                animation: none;
+            }
         }
     </style>
 </head>
@@ -415,7 +424,7 @@
         </div>
     </header>
 
-    <p class="map-hint" id="map-hint" hidden><strong>Every red point is a Firewatch detection.</strong> Brighter means more recent. Zoom in to see the actual satellite image of the fire.</p>
+    <p class="map-hint" id="map-hint" hidden><strong>Every red point is a Firewatch detection.</strong> A number groups nearby ones. Brighter means more recent. Tap a fire to see its satellite image.</p>
 
     <aside class="details" id="details" aria-hidden="true" aria-labelledby="details-title" inert>
         <button class="close-button" id="close-details" type="button" aria-label="Close">
@@ -443,6 +452,8 @@
             container: "map",
             style: {
                 version: 8,
+                // The font for the numbers on the groups of fires. The URL has to be absolute: the map reads it in a worker
+                glyphs: new URL("fonts/", location.href).href + "{fontstack}/{range}.pbf",
                 sources: {
                     satellite: {
                         type: "raster",
@@ -484,11 +495,15 @@
         map.touchZoomRotate.disableRotation();
         map.keyboard.disableRotation();
 
-        function detailsPadding() {
-            if (!details.classList.contains("is-open")) return { top: 0, right: 0, bottom: 0, left: 0 };
+        // The part of the screen the details sheet covers when it is open: the right side on a computer, the bottom on a phone
+        function sheetPadding() {
             return innerWidth <= 820
                 ? { top: 0, right: 0, bottom: details.offsetHeight, left: 0 }
                 : { top: 0, right: details.offsetWidth, bottom: 0, left: 0 };
+        }
+
+        function detailsPadding() {
+            return details.classList.contains("is-open") ? sheetPadding() : { top: 0, right: 0, bottom: 0, left: 0 };
         }
 
         function applyDetailsPadding(duration = 180) {
@@ -559,6 +574,11 @@
                 frame.style.height = `${height}px`;
                 image.style.transform = `rotate(${angle}deg)`;
             });
+        }
+
+        // The image of the fire in the sheet goes on top, because the images of fires near it would otherwise cover it
+        function stackImages() {
+            imageMarkers.forEach(({ fire, frame }) => { frame.style.zIndex = fire.id === details.dataset.fireId ? 1 : ""; });
         }
 
         // Each fire has a small thumbnail and the full image. The thumbnail shows first, and the full image takes over once
@@ -652,6 +672,7 @@
 
             imageMarkers.forEach(upgradeImage);
             updateImageMarkers();
+            stackImages();
 
             status.textContent = nearby.length ? `${nearby.length} detection image${nearby.length === 1 ? "" : "s"} on terrain` : "No detections in this view";
             mapHint.hidden = nearby.length > 0;
@@ -683,6 +704,7 @@
             document.getElementById("details-link").hidden = !fire.tweet_url;
             document.getElementById("details-link").href = fire.tweet_url || "#";
             details.dataset.fireId = fire.id;
+            stackImages();
             details.classList.add("is-open");
             document.documentElement.style.setProperty("--details-height", `${details.offsetHeight}px`);
             document.body.classList.add("details-open");
@@ -721,8 +743,37 @@
             else map.easeTo(move);
         }
 
+        // The box around some places: its center, its size in meters and its latitude
+        function extent(places) {
+            const longitudes = places.map(([longitude]) => longitude);
+            const latitudes = places.map(([, latitude]) => latitude);
+            const [west, east, south, north] = [Math.min(...longitudes), Math.max(...longitudes), Math.min(...latitudes), Math.max(...latitudes)];
+            const latitude = (south + north) / 2;
+            return {
+                center: [(west + east) / 2, latitude],
+                width: (east - west) * 111320 * Math.cos(latitude * Math.PI / 180),
+                height: (north - south) * 111320,
+                latitude
+            };
+        }
+
+        // The zoom at which the box fills `share` of the screen the sheet leaves free. A box with no size gives Infinity.
+        // (cameraForBounds does the same, but it fails on a box with no size while the globe shows)
+        function zoomToFill({ width, height, latitude }, share, sheet) {
+            const pixelsPerMeter = share * Math.min((innerWidth - sheet.right) / width, (innerHeight - sheet.bottom) / height);
+            return Math.log2(pixelsPerMeter * 40075016.686 * Math.cos(latitude * Math.PI / 180) / 512);
+        }
+
+        // The zoom at which the fire's image fills the part of the screen the sheet leaves free, with a margin. The legend bars at the top and
+        // bottom of the image are hidden, so only 84% of its height counts. Never below the zoom where images show, whatever its size
+        function fitZoom(fire) {
+            const box = extent(imageCorners(fire));
+            box.height *= 0.84;
+            return Math.max(10.6, zoomToFill(box, 0.92, sheetPadding()) || 0);
+        }
+
         function focusFire(fire, zoomIn = true) {
-            const zoom = zoomIn ? Math.max(map.getZoom(), 10.6) : map.getZoom();
+            const zoom = zoomIn ? Math.max(map.getZoom(), fitZoom(fire)) : map.getZoom();
             // Start downloading the images now, so they arrive during the move instead of after it
             prefetchImage(fire.thumb_url || fire.image_url);
             prefetchImage(imageSource(fire, frameWidthAt(fire, zoom)));
@@ -731,32 +782,43 @@
                 pendingFire = null;
                 openDetails(fire);
             }
-            moveCamera([fire.longitude, fire.latitude], zoom);
+            moveCamera(imageCenter(fire), zoom);
         }
 
-        // A fingertip is much wider than a dot, so a tap opens the nearest fire within reach. If the spot holds several fires that
-        // overlap on screen, a tap zooms in on them first instead, so the next tap can choose one
+        // Zooms in on a group of fires until it breaks up. If its fires are close enough to still be together at that zoom, it goes on
+        // until they are all in view (at most zoom 11), so the next tap can choose one. If they would still overlap at zoom 11, the group
+        // is a single place seen several times (a fire found again on another day), so it opens the newest of them
+        async function openGroup(group) {
+            const source = map.getSource("fires");
+            const id = group.properties.cluster_id;
+            const [breakZoom, leaves] = await Promise.all([source.getClusterExpansionZoom(id), source.getClusterLeaves(id, group.properties.point_count, 0)]);
+            const box = extent(leaves.map((leaf) => leaf.geometry.coordinates));
+            const zoom = zoomToFill(box, 0.8, detailsPadding());
+            pendingFire = null;
+            if (zoom > 16) {
+                const newest = leaves.reduce((a, b) => (a.properties.age <= b.properties.age ? a : b));
+                focusFire(fires.find((fire) => fire.id === newest.properties.id));
+            } else if (zoom > breakZoom) moveCamera(box.center, Math.min(zoom, 11));
+            else moveCamera(group.geometry.coordinates, Math.max(breakZoom, map.getZoom() + 1));
+        }
+
+        // A fingertip is much wider than a dot, so a tap picks the nearest group or fire within reach. A group zooms in until it breaks up,
+        // and a fire zooms in until its image fills the screen
         function tapFires(point) {
             const reach = matchMedia("(pointer: coarse)").matches ? 22 : 8;
-            const ids = new Set(map.queryRenderedFeatures([[point.x - reach, point.y - reach], [point.x + reach, point.y + reach]], { layers: ["fires"] }).map((feature) => feature.properties.id));
-            const near = fires.filter((fire) => ids.has(fire.id)).map((fire) => {
-                const position = map.project([fire.longitude, fire.latitude]);
-                return { fire, position, distance: position.dist(point) };
-            }).sort((a, b) => a.distance - b.distance);
-            if (!near.length) return;
+            const box = [[point.x - reach, point.y - reach], [point.x + reach, point.y + reach]];
+            const nearest = (layer) => map.queryRenderedFeatures(box, { layers: [layer] })
+                .map((feature) => ({ feature, distance: map.project(feature.geometry.coordinates).dist(point) }))
+                .sort((a, b) => a.distance - b.distance)[0]?.feature;
 
-            const overlapping = near.filter((item) => item.position.dist(near[0].position) < 12);
-            if (overlapping.length > 1) {
-                const bounds = new maplibregl.LngLatBounds();
-                overlapping.forEach(({ fire }) => bounds.extend([fire.longitude, fire.latitude]));
-                const camera = map.cameraForBounds(bounds, { padding: 80, maxZoom: 11 });
-                if (camera && camera.zoom > map.getZoom() + 0.75) {
-                    pendingFire = null;
-                    moveCamera([camera.center.lng, camera.center.lat], camera.zoom);
-                    return;
-                }
+            const group = nearest("clusters");
+            if (group) {
+                openGroup(group);
+                return;
             }
-            focusFire(near[0].fire);
+            const dot = nearest("fires");
+            const fire = dot && fires.find((candidate) => candidate.id === dot.properties.id);
+            if (fire) focusFire(fire);
         }
 
         map.on("load", async () => {
@@ -776,7 +838,13 @@
                             geometry: { type: "Point", coordinates: [fire.longitude, fire.latitude] },
                             properties: { id: fire.id, age: (Date.now() - Date.parse(fire.detected_at)) / 864e5 }
                         }))
-                    }
+                    },
+                    // Fires close together are grouped into one numbered circle until zoom 9, where the dots take over and the images follow.
+                    // A group keeps the age of its newest fire, to be drawn as bright as it
+                    cluster: true,
+                    clusterRadius: 50,
+                    clusterMaxZoom: 8,
+                    clusterProperties: { newest: ["min", ["get", "age"]] }
                 });
 
                 // The newest fires are the brightest and biggest, and are drawn on top. Older ones fade over the month.
@@ -787,6 +855,7 @@
                     id: "fires",
                     type: "circle",
                     source: "fires",
+                    filter: ["!", ["has", "point_count"]],
                     layout: { "circle-sort-key": ["-", ["get", "age"]] },
                     paint: {
                         "circle-color": ["interpolate", ["linear"], ["get", "age"], 0, "#ff5a36", 2, "#ee4535", 7, "#e43e32"],
@@ -798,14 +867,65 @@
                     }
                 });
 
+                // A group is bigger the more fires it holds, and as bright as its newest fire. It fades less than a single fire, so its number
+                // stays readable
+                const grouped = ["has", "point_count"];
+                const groupRadius = ["step", ["get", "point_count"], 12, 5, 15, 10, 18, 25, 21, 60, 25];
+                const groupFade = ["interpolate", ["linear"], ["get", "newest"], 0, 1, 2, 1, 7, 0.9, 30, 0.72];
+                map.addLayer({
+                    id: "cluster-halo",
+                    type: "circle",
+                    source: "fires",
+                    filter: grouped,
+                    paint: {
+                        "circle-color": "#ff5a36",
+                        "circle-radius": ["+", groupRadius, 8],
+                        "circle-blur": 0.6,
+                        "circle-opacity": ["*", 0.3, groupFade]
+                    }
+                });
+                map.addLayer({
+                    id: "clusters",
+                    type: "circle",
+                    source: "fires",
+                    filter: grouped,
+                    paint: {
+                        "circle-color": ["interpolate", ["linear"], ["get", "newest"], 0, "#ff5a36", 2, "#ee4535", 7, "#e43e32"],
+                        "circle-radius": groupRadius,
+                        "circle-opacity": ["*", 0.92, groupFade],
+                        "circle-stroke-color": "#fff3e6",
+                        "circle-stroke-width": 1.2,
+                        "circle-stroke-opacity": ["*", 0.7, groupFade]
+                    }
+                });
+                map.addLayer({
+                    id: "cluster-count",
+                    type: "symbol",
+                    source: "fires",
+                    filter: grouped,
+                    layout: {
+                        "text-field": ["get", "point_count_abbreviated"],
+                        "text-font": ["semibold"],
+                        "text-size": 13,
+                        "text-allow-overlap": true
+                    },
+                    paint: {
+                        "text-color": "#ffffff",
+                        "text-halo-color": "rgba(95, 18, 0, 0.55)",
+                        "text-halo-width": 1
+                    }
+                });
+
                 count.textContent = `${fires.length.toLocaleString()} recent detections`;
                 latestButton.disabled = false;
                 syncImages();
                 // The "Latest fire" button is the most likely next click, so have its thumbnail ready (not on Data Saver)
                 if (!navigator.connection?.saveData) prefetchImage(fires[0].thumb_url || fires[0].image_url);
 
-                map.on("mouseenter", "fires", () => { map.getCanvas().style.cursor = "pointer"; });
-                map.on("mouseleave", "fires", () => { map.getCanvas().style.cursor = ""; });
+                ["fires", "clusters"].forEach((layer) => {
+                    map.on("mouseenter", layer, () => { map.getCanvas().style.cursor = "pointer"; });
+                    map.on("mouseleave", layer, () => { map.getCanvas().style.cursor = ""; });
+                });
                 map.on("click", (event) => tapFires(event.point));
             } catch (error) {
                 document.getElementById("error-message").hidden = false;
